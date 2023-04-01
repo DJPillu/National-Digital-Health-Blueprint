@@ -1,0 +1,207 @@
+@startuml class
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title National Digital Health Blueprint
+
+class Person{
+    -String name
+    -int age
+    -String gender
+    -String HealthID
+
+    +getName()
+    +getAge()
+    +getGender()
+    +getHealthID()
+    +enterDetails()
+    +bookAppointment()
+    +makePayment(double amount)
+    +giveOrder(universalHealthID, prescription)
+}
+
+class Patient extends Person{
+    -String patientID
+
+    +bookAppointment(universalHealthID)
+}
+
+class CareProfessional extends Person { 
+    -int employeeID
+
+    + getName()
+    + getID() 
+    + getTraining()
+    + ProvidesCare() 
+ }
+
+class Doctor extends CareProfessional { 
+    - areaofExpertise
+    - practiceLicense
+
+    + checkPatientHistory()
+    + treatPatient()
+    + prescription(drugNames[])
+}
+
+class Nurse extends CareProfessional {
+    + assistsDoctor()
+    + afterOperationCare() 
+} 
+
+
+class CareProvider{
+    - HealthFacilityLicense 
+
+    + ProvideHealthCare()
+    + diagnoseCondition()
+    + provideTreatment()
+    + getLincense()
+    + receivePayment()
+} 
+
+class Hospital extends CareProvider{
+    - String StaffNames
+    - String StaffIDs 
+    - String LabNames
+    - String Rooms
+    - String Administration
+
+    + receivesFee() 
+    + controlsPatients() 
+    + assignsRooms()
+    + assignsDoctorsforPatients() 
+    + runsAdministrativeBody()
+}
+
+class DiagnosticCentre extends CareProvider{
+    - String NameofDoctors
+    - String Laboratories
+
+    + getsDoctorName()
+    + takesDiagnosticTests()
+    + collectsBloodSample() 
+    + analyses Samples()
+    + generatesReport()
+}
+
+class UniversalHealthID{
+
+    - int IdentificationNumber
+    - string DigitalHealthCoverage
+    - int CivilRegistration
+
+    + registerData()
+    + manageData()
+    + getIdentificationNumber()
+}
+
+class ElectronicHealthRecord{
+    - Patient MedicalHistory[]
+    - String Prescriptions[]
+
+    + getMedicalHistory()
+    + psrescription()
+}
+
+class GovernmentAgency{
+    - AgencyName
+    - Policies
+
+    + provideUniversalHealthID()
+}
+
+class NDHBRecords{
+
+    + enterDetails(universalHealthID)
+    + updateRecords()
+    - verifyCredentials(universalHealthID)
+    + getRecords(patientDetails)
+    + sendPatientRecords()
+}
+
+class AuthorizationSystem
+{
+    + checkCredentials()
+    - verifyCredentials()
+}
+
+class InsuranceCompany{
+    - string Name
+    - Person detailsOfPerson 
+
+    + getNominee()
+    + provideService() 
+    + FinancialTransaction()
+}
+
+class HealthPlan{
+    - string name
+    - float installment
+    - Patient Name 
+    - float Charges
+
+    + AmbulanceService()
+    + EmergencyService()
+    + Hospitalisation()
+    + MentalHealthService() 
+}
+
+class Pharmaceuticals{
+    - string brandName
+    - float priceOfDrugs
+    
+    + provideServices()
+    + makeMedicines()
+    + vaccination()
+}
+
+class PaymentSystem{
+    + authorizePayment()
+    - checkCredentials()
+}
+
+
+CareProfessional -left-o Hospital : works-in
+
+ElectronicHealthRecord "1" --* "1" UniversalHealthID : contains
+
+Person "1*" -- "1" UniversalHealthID  : requires
+Person  "*" - "1" GovernmentAgency : services
+Person "1..*" -- "1..*" CareProvider : treats
+Person "1..*" -- "1..*" Pharmaceuticals : services
+Person "1..*" - "1..*" HealthPlan : buys
+Person "1..*" -- "1..*" InsuranceCompany : services
+
+
+Patient "1..*" - "1..*" CareProfessional : consult
+
+CareProvider "1..*" -up- "1..*" InsuranceCompany : pays
+CareProvider "1..*" -- "1..*" Pharmaceuticals : services
+CareProvider "1..*" - "1" PaymentSystem : uses
+
+InsuranceCompany "1" - "1..*" HealthPlan : issues
+InsuranceCompany "1..*" - "1" PaymentSystem : uses
+
+Pharmaceuticals "1..*" - "1" PaymentSystem : uses
+GovernmentAgency "1" - "1" PaymentSystem : uses
+GovernmentAgency "1" - "1" AuthorizationSystem : uses
+
+
+UniversalHealthID "1..*" -down- "1" GovernmentAgency : issues
+
+ElectronicHealthRecord "1..*" - "1..*" CareProfessional : use
+ElectronicHealthRecord "1..*" -up- "1..*" DiagnosticCentre : produce
+ElectronicHealthRecord -down- Patient
+
+NDHBRecords "1" -- "1" GovernmentAgency : access
+NDHBRecords "1" -- "1..*" CareProvider : access
+NDHBRecords "1" -- "1..*" CareProfessional : access
+NDHBRecords "1" --- "1..*" Pharmaceuticals : access
+
+
+
+@enduml
