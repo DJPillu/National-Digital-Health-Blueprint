@@ -1,0 +1,61 @@
+@startuml seq1
+
+skinparam Style strictuml
+skinparam SequenceMessageAlignment center
+
+participant ":Authorization System" as ss order 30
+database "NDHB Records" as nr order 40
+actor ":Patient" as pt
+actor ":Government Agency" as ga
+participant ":Payment System" as ps order 20
+
+
+title __UniversalHealthID Issue Process __
+
+pt -> ga : makeUniversalHealthIDIssueRequest
+
+loop (1, 3) [authorization failed]
+pt -> ga : enterDeatils(name, details)
+pt <<-- ga : sendRecieveAcknowledgement
+
+    group checkCredentials
+        ga -> ss : checkCredentials(name, details)
+
+        ss -> ss : verifyCredentials(name, details)
+        alt successful authorization
+            ga <<-- ss : authorizationComplete
+        else authorization failure
+            ga <<-- ss : authorizationFailed
+        end
+    
+    end
+end
+
+break ["authorization failed"]
+pt <<-- ga : authorizationNotOk
+end
+
+pt -> ga : makePayment(amount)
+
+loop (1, 3) [autorizePayment failed]
+ga -> ps : authorizePayment()
+    group checkCredentials
+            ps -> ps : checkCredentials
+            alt successful authorization
+                ga <<-- ps : authorizationComplete
+            else authorization failure
+                ga <<-- ps : authorizationFailed
+            end
+    end
+end
+
+break ["authorizePayment failed"]
+pt <<-- ga : paymentFailed
+end
+
+pt <<-- ga : paymentApproved
+pt <<-- ga : IssueUniversalHealthID
+
+ga -> nr : RecordUpdated
+
+@enduml
