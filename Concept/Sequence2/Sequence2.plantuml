@@ -1,0 +1,59 @@
+@startuml seq 2
+
+skinparam Style strictuml
+skinparam SequenceMessageAlignment center
+
+database ":NDHB Records" as nr order 10
+actor ":Patient" as pt
+actor ":Hospital" as hp
+participant ":Payment System" as ps order 20
+
+title __OnlineBookAppointment Process__
+
+
+
+loop (1, 3) [authorization failed]
+pt -> hp : bookAppointment(universalHealthId)
+hp -> nr : enterDeatils(universalHealthId)
+hp <<-- nr : sendRecieveAcknowledgement
+
+    group checkCredentials
+        nr -> nr : verifyCredentials(universalHealthId)
+        alt successful authorization
+            hp <<-- nr : authorizationComplete
+        else authorization failure
+            hp <<-- nr : authorizationFailed
+        end
+ 
+    end
+end
+
+break ["authorization failed"]
+pt <<-- hp : authorizationNotOk
+end
+
+pt <<-- hp : authorizationOk
+
+pt -> hp : makePayment(amount)
+
+loop (1, 3) [autorizePayment failed]
+hp -> ps : authorizePayment()
+    group checkCredentials
+            ps -> ps : checkCredentials
+            alt successful authorization
+                hp <<-- ps : authorizationComplete
+            else authorization failure
+                hp <<-- ps : authorizationFailed
+            end
+    end
+end
+
+break ["authorizePayment failed"]
+pt <<-- hp : paymentFailed
+end
+
+pt <<-- hp : paymentSuccess
+
+pt <<-- hp : appointmentBooked
+
+@enduml
