@@ -1,0 +1,83 @@
+@startuml Use Case
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title National Digital Health Blueprint
+left to right direction
+
+actor person
+actor patient
+actor doctor
+actor hospital
+actor governmentAgency
+actor insuranceAgency
+actor pharma
+actor SystemAdministrator
+
+rectangle "Authorization System" <<actor>> as AS
+rectangle "NDHM Call Centre" <<actor>> as CC
+rectangle "Payment System" <<actor>> as PS
+rectangle "NDHB Records" <<Actor>> as NR
+
+rectangle "National Digital Health Blueprint"{
+    patient -|> person
+    patient -- (Issue Universal Health ID)
+    patient -- (Book an appointment)
+    
+    (Book an appointment) .> (Authenticate Patient) : <<include>>
+    (Book an appointment) -down- (hospital)
+
+    (Online appointment) -|> (Book an appointment)
+    (Call Centre appointment) -|> (Book an appointment)
+    (Call Centre appointment) -- CC
+    (Authenticate Patient) -- NR
+    patient -- (Get an e-prescription)
+    (Get an e-prescription) .left.> (Authenticate Patient) : <<include>>
+    (Get an e-prescription) - doctor
+
+    patient -- (View patient records and information)
+    (View patient records and information) .> (Authenticate Patient) : <<include>>
+    
+    (View patient records and information) -- doctor
+
+    (Issue Universal Health ID) -- governmentAgency
+    (Issue Universal Health ID) -- AS : <<include>>
+    (Issue Universal Health ID) -- NR
+
+    person -- (buy Health Plan)
+    (buy Health Plan) .> (Authenticate Patient) : <<include>>
+    (buy Health Plan) -down- (insuranceAgency)
+    (buy Health Plan) -down- PS : <<include>>
+
+    patient -- (buy drugs)
+    (buy drugs) -- PS : <<include>>
+    (buy drugs) .> (Authenticate Patient) : <<include>
+    (buy drugs) -- pharma
+    (buy drugs) <. (Home Delivery) : <<extend>>
+    (buy drugs) <. (Get an e-prescription) : <<include>>
+
+    (Get an e-prescription) <. (buy drugs) : <<extend>>
+
+    hospital -- (buy drugs)
+
+    SystemAdministrator -- (Manage Data & Cyber Security)
+
+}
+
+@enduml
+
+1. adhaar verification♫
+
+2. health ID issue
+
+3. online appointments - emergency services
+-e-presciptions(under call centre)
+
+4. summary care record and digital diagnostics
+
+5. national health portal - app store
+
+6.  maintenance - Data & Cyber Security
