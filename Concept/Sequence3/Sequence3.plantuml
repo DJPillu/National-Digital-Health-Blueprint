@@ -1,0 +1,60 @@
+@startuml seq 3
+
+skinparam Style strictuml
+skinparam SequenceMessageAlignment center
+
+database ":NDHB Records" as nr order 20
+participant ":PaymentSystem" as ps order 30
+participant ":Pharma" as ph order 10
+actor ":Doctor" as doc
+actor ":Patient" as pt
+
+
+
+title __BuyDrugs Process__
+
+doc -> nr : getRecords(patientDetails)
+nr -->> doc : sendPatientRecords()
+doc -> pt : prescription(drugNames)
+
+loop (1, 3) [authorization Failed]
+pt -> ph : giveOrder(univeralHealthID, prescription)
+ph -> nr : enterDeatils(universalHealthId)
+ph <<-- nr : sendRecieveAcknowledgement
+
+    group checkCredentials
+        nr -> nr : verifyCredentials(universalHealthId)
+        alt successful authorization
+            ph <<-- nr : authorizationComplete
+        else authorization failure
+            ph <<-- nr : authorizationFailed
+        end
+    end
+end
+
+break ["authorization failed"]
+pt <<-- ph : authorizationNotOk
+end
+
+pt -> ph : makePayment(paymentMode, amount)
+
+
+loop (1, 3) [autorizePayment failed]
+ph -> ps : authorizePayment()
+    group checkCredentials
+            ps -> ps : checkCredentials
+            alt successful authorization
+                ph <<-- ps : authorizationComplete
+            else authorization failure
+                ph <<-- ps : authorizationFailed
+            end
+    end
+end
+
+break ["authorizePayment failed"]
+pt <<-- ph : paymentFailed
+end
+
+pt <<-- ph : paymentSucess
+
+@enduml
