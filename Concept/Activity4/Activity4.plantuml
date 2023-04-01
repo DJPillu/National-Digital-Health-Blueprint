@@ -1,0 +1,38 @@
+@startuml buy health plan
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title __buy health plan__
+
+|Person|
+start
+note : Person buys health plan
+
+|Person|
+:submit Universal Health ID;
+
+|Insurance Agency|
+:request verification of Universal Health ID;
+
+|NDHB Records|
+:Verifying ID;
+
+|Insurance Agency|
+:request payment;
+
+|Person|
+:make payment;
+
+|Payment System|
+:verify credentials;
+
+|Person|
+:Health Plan received;
+
+stop
+
+
+@enduml
