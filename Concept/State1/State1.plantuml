@@ -1,0 +1,23 @@
+@startuml UniversalHealthID
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title __UniversalHealthID__
+
+[*] -down-> WaitingForUniversalHealthId
+
+WaitingForUniversalHealthId -right-> EnteringDetails : makeUniversalHealthId Request
+EnteringDetails --> EnteringDetails : enterDetail
+EnteringDetails -down-> WaitingForVerification: details sent
+WaitingForVerification -left-> AuthorizatonSystem: makeVerifyDetailsRequest
+AuthorizatonSystem -right-> WaitingForVerification: verification failed
+AuthorizatonSystem -left-> Exit: cancel
+AuthorizatonSystem -down-> IssueHealthId: verified
+
+Exit -> [*]
+IssueHealthId --> [*] : issued
+
+@enduml
