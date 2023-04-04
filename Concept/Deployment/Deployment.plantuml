@@ -1,0 +1,75 @@
+@startuml deployment diagram
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title Deployment Diagram
+
+skinparam nodeStyle uml2
+
+node "User" {
+    artifact "<<artifact>>\nWebBrowser" as GUI
+}
+
+node "WebServer Apache" as WS {
+    artifact "<<artifact>>\n Java Server Pages" as JSP
+}
+
+node "Application Server Tomcat" as AST {
+    node [Application] as APP
+}
+
+database Database {
+    artifact "<<artifact>>\nJDBC" as DB
+}
+
+node Care{
+    artifact "<<subsystem>>\nCare Provider" as CP
+    
+}
+
+node Insurance{
+    artifact "<<subsystem>>\nInsurance"
+}
+
+node UniversalHealthIDSystem{
+    artifact "<<artifact>>\nUniversalHealthID" as UHID
+    artifact "<<artifact>>\nElectronicHealthRecord" as EHR
+}
+
+node GovernmentAgency{
+    artifact "<<subsystem>>\nGovernment Agency" as GA
+}
+
+node PaymentAgency{
+    artifact "<<subsystem>>\nPayment System" as PS
+}
+
+node AuthorizationSystem{
+    artifact "<<subsystem>>\nAuthorization System" as AS
+}
+
+GUI ..> WS : HTML/SSL
+JSP ..> APP : SOAP
+
+
+APP ..> DB
+APP ..> UHID
+APP ..> EHR
+APP ..> Insurance
+APP ..> CP
+APP .right.> GA
+APP .left.> PS
+APP .right.> AS
+
+WS -- AST
+AST -- Care
+AST -- Insurance
+AST -- UniversalHealthIDSystem
+AST -right- GovernmentAgency
+AST -left- PaymentAgency
+AST -right- AuthorizationSystem
+
+@enduml
