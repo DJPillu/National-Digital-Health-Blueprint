@@ -1,0 +1,29 @@
+@startuml Buying Drugs
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title __Buy Drugs__
+
+[*] -down-> Idle
+
+Idle -down-> WaitingForPrescription: consults Doctor
+WaitingForPrescription -right-> getPriscription: medication Prescribed
+getPriscription -down-> WaitingToBuyPrescription: details to Pharma given
+WaitingToBuyPrescription -left-> WaitingForHeathIdVerification: healthId details sent
+WaitingForHeathIdVerification -left-> AuthorizingHealthId: verifying details
+AuthorizingHealthId -right-> WaitingForHeathIdVerification: verification failed
+AuthorizingHealthId -down-> WaitingForPayment: verification succedful
+AuthorizingHealthId -> Exit : cancel
+WaitingForPayment -down-> AuthorizingPayment: verifying credentials
+AuthorizingPayment -up-> WaitingForPayment: verification failed
+AuthorizingPayment -right-> Exit : cancel
+AuthorizingPayment -down-> TakeMedication: authorized
+
+Exit -> [*]
+TakeMedication -> [*]
+
+
+@enduml
