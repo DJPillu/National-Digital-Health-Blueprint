@@ -1,0 +1,33 @@
+@startuml Appointment Booking
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title __Appointment Booking__
+
+[*] -down-> Idle
+
+Idle -down-> WaitingForAppointment
+WaitingForAppointment -right-> WaitingToEnterDetails : book appointment
+WaitingToEnterDetails -> WaitingToEnterDetails: enter detail
+WaitingToEnterDetails -down-> WaitingForHealthIDVerification: details sent
+WaitingForHealthIDVerification -down-> AuthorizeHealthId: verifying details
+AuthorizeHealthId -up-> WaitingForHealthIDVerification: verfication failed
+AuthorizeHealthId -left-> WaitingForSlot : verification successful
+AuthorizeHealthId -down-> Exit: cancel
+WaitingForSlot -left-> WaitingForDateConfirmation: details sent
+WaitingForDateConfirmation -right-> WaitingForSlot : date not confirmed
+WaitingForSlot -down-> Exit : cancel
+WaitingForDateConfirmation -down-> AppointmentBooked: date confirmed
+WaitingForDateConfirmation -down-> Exit: cancel
+
+Exit -down-> [*]
+AppointmentBooked -down-> [*]
+
+
+
+
+
+@enduml
