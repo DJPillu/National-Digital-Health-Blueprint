@@ -1,0 +1,86 @@
+@startuml   Component Diagram
+
+skinparam titleBorderRoundCorner 15
+skinparam titleBorderThickness 2
+skinparam titleBorderColor black
+skinparam titleBackgroundColor yellow
+
+title Component Diagram
+
+component [Payment System] as PS
+
+component [Government Agency] as GA
+
+component [Authorization System] as AS
+
+component GUI [
+    <<subsystem>>
+        GUI
+]
+
+component "CallCentre" as CC
+
+component "Application" as APP
+
+package People{
+    component [Person] as PE
+    component [Patient] as PA
+    component [CareProfessional] as CP
+    component [Doctor] as D
+    component [Nurse] as N
+}
+
+PE <|-down- PA
+PE <|-down- CP  
+CP <|-down- N
+CP <|-down- D
+
+
+package Care{
+    component [CareProvider] as CPR
+    component [DiagnosticCentre] as DC
+    component [Hospital] as H
+    component [Pharmaceuticals] as PHA
+}
+
+CPR <|-down- H
+CPR <|-down- DC
+CPR <|-down- PHA
+
+package UniversalHealthIDSystem{
+    component [UniversalHealthID] as UHID
+    component [ElectronicHealthRecord] as EHR
+}
+
+package Insurance{
+    component [InsuranceCompany] as IC
+    component [HealthPlan] as HP
+}
+
+package Database{
+    component [NDHB Records]
+}
+
+People ..> [GUI]
+[GUI] -(0- [APP] : View Interface
+
+APP -(0- Care : Care Provider Interface
+APP -(0- UniversalHealthIDSystem : UHID Interface
+APP -(0- Database : NDHBR Interface
+APP -(0- Insurance : Insurance Interface
+APP -(0- PS : Payment Interface
+
+UHID ..> GA
+GA ..> AS
+GA -(0- Database : update NDHBR Interface
+CC -- APP : uses
+
+PE -- HP
+PE .left.> CC
+
+UHID *- EHR 
+
+HP -- IC : issues
+
+@enduml
+
